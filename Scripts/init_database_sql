@@ -1,1 +1,30 @@
 
+Use master;
+GO
+
+-- Drop and recreate database dataWarehouse
+IF EXISTS (Select 1 from sys.databases WHERE name = 'DataWarehouse')
+Begin
+	ALTER Database DataWarehouse SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+	DROP DATABASE DataWarehouse;
+	END;
+GO
+
+--Create a 'datawarehouse' database
+
+CREATE Database DataWarehouse;
+Go
+
+Use DataWarehouse;
+GO
+
+-- Create Schemas
+
+CREATE SCHEMA Bronze;
+Go
+
+CREATE SCHEMA Silver;
+GO
+
+CREATE SCHEMA Gold;
+GO
