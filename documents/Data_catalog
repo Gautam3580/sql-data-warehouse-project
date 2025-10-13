@@ -1,0 +1,45 @@
+Gold.dim_customers			
+
+Purpose: It provides information about the products and their attributes.
+Columns: 
+
+Column Name	        Data           Type	Discription	
+customer_key	      INT	            Surrogate key uniquely identifying each customer record in the dimension table.	
+customer_ID	        INT	            Unique numerical identifier assigned to each customer.	
+first_name	      VARCHAR(50)	      Alphnumeric identifier representing the customer, used for tracking and referencing.	
+last_name	        VARCHAR(50)      	The customer's first name, as recorded in the system.	
+country	          VARCHAR(50)	      The customer's last name, as recorded in the system.	
+marital_status	  VARCHAR(50)	      The marital status of the customer (Married, Single).	
+gender	          VARCHAR(50)	      The gender of the customer (Female, Male, n/a).	
+birthdate	        DATE	            The date of birth of the custorer as recored in the system.	
+create_date	datetime		
+			
+			
+Gold.dim_product			
+			
+Column Name	            Data             Type	Description	
+product_key	            INT	              Surrogate key uniquely identifying each record in the dimension table.	
+product_id	            INT	              Unique identifier assigned to each product.	
+product_number	        INT              	Alphanumeric identifier representing the product, used for tracking and referencing.	
+category_id	            INT	              Unique identifier assigned to each product category.	
+product_name	        VARCHAR(50)	        The product's name, as recorded in the system.	
+category	            VARCHAR(50)	        Category of the product to which it belong to.	
+subcategory	          VARCHAR(50)	        Subcategory of the product to which it belong to.	
+maintenance	          BOOLEAN	            Whether maintenance is required for the product or not.	
+product_cost	        DECIMAL(10,2)	      How much that product cost.	
+product_line	        VARCHAR(50)	        It describe what does that product is.	
+start_date	            DATE	            When the product was produced.	
+			
+			
+Gold.fact_sales			
+			
+Column Name	          Data         Type	Description	
+order_number	          INT        	The order number recorded in the system.	
+product_key	            INT        	Unique product key assigned to a product.	
+customer_key	          INT	        Customer who placed the orders.	
+order_date	            DATE      	The date on  which the order was placed.	
+ship_date              	DATE	      When the product was delivered.	
+due_date	              DATE	      When was the due date for the product to be delivered.	
+sales_amount	        DECIMAL(10,2)	What was the total sales amount for the particular order.	
+quantity	            INTEGER	      How many quantities werer ordered.	
+price	                DECIMAL(10,2)	What was price of the product.	
