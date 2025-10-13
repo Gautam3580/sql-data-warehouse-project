@@ -1,4 +1,9 @@
-Gold.dim_customers			
+Overview:
+The Gold_Layer is the business lever data representation, structured to support analytical and reporting use cases.
+It consists of dimentions taables and fact tables for specific business metrics.
+=================================================================================================================
+
+Gold.dim_customers:		
 
 Purpose: It provides information about the products and their attributes.
 Columns: 
@@ -15,7 +20,7 @@ birthdate	        DATE	            The date of birth of the custorer as recored 
 create_date	datetime		
 			
 			
-Gold.dim_product			
+Gold.dim_product:			
 			
 Column Name	            Data             Type	Description	
 product_key	            INT	              Surrogate key uniquely identifying each record in the dimension table.	
@@ -31,7 +36,7 @@ product_line	        VARCHAR(50)	        It describe what does that product is.
 start_date	            DATE	            When the product was produced.	
 			
 			
-Gold.fact_sales			
+Gold.fact_sales:		
 			
 Column Name	          Data         Type	Description	
 order_number	          INT        	The order number recorded in the system.	
