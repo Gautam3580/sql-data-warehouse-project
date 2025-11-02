@@ -1,0 +1,63 @@
+/*
+*********************************************************************************************************************************************************************************************
+What is Recursive CTE?
+-- A recursive CTE loops through table data until it meets the certain condition. This looping is initiated by the Anchor Query and the results of the Anchor is then 
+   passed on to the Recursive Query for the looping. The recursive query goes into the table data and search for the specified condition and if it meets the condition
+   then fetch the results set into the final table.
+*********************************************************************************************************************************************************************************************
+
+  The below code loops through and create a sequence of numbers from 1 to 20. In the Anchor Query we have initiated 1 As Number and we are incrementing this number by 1.
+  This looping is done until it meets the condition, i.e., 20 in this case. The Recursive query runs multiple times until it reaches the limit of 20.
+  We refer the CTE itself for recursion.
+  In the main query we are setting the max recursion limit to 100 as we are genetating the sequence of number upto 20. However, by default the max recursion limit is 100.
+  We can customize this max recursion limit as per our requirement.
+=============================================================================================================================================================================================
+*/
+
+--Generate a Sequence of Numbers from 1 to 20.
+
+    --Anchor Query
+WITH Number_Series AS 
+(
+Select
+1 AS number
+
+UNION ALL
+    --Recursive Query
+SELECT 
+number + 1
+FROM Number_Series
+WHERE number < 20
+)
+
+SELECT * FROM Number_Series
+OPTION (MAXRECURSION 100);
+
+
+-- Show the employee hierarchy by displaying each employee's level within the organization.
+
+WITH Hierarchy_Level AS
+(
+SELECT
+employeeID,
+FirstName,
+LastName,
+ManagerID,
+1 AS Level
+From Sales.Employees 
+WHERE ManagerID Is Null
+
+UNION ALL
+
+SELECT
+e.EmployeeID,
+e.FirstName,
+e.LastName,
+e.ManagerID,
+ Level + 1
+FROM Sales.Employees e
+JOIN Hierarchy_Level eh
+ON e.ManagerID = eh.EmployeeID
+)
+
+SELECT * FROM Hierarchy_Level;
