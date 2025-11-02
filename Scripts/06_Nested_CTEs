@@ -1,0 +1,74 @@
+/*  
+CTE Commonly known as Common Table Expressions. This helps us managing the complex logic to break into a small pieces of code. 
+A Standalone CTE handles a single business problem and answers the business question, however in Nested CTEs the very first CTE referes the data from the database but the following CTEs are depending for data on the first CTE.
+We can use as many CTEs as we want and solve the complex business logic step by step and to do that CTEs plays a vital role.
+
+==================================================================================================================================================================================================================================
+The following code is divided into four CTEs and one Main Query. The nested CTEs are answering the various business questions such as:
+1. Finding the Totals Sales per customer.
+2. Second CTE finds the last order placed by the customer
+3. Finds the Rank of the customer as per the order size.
+4. Segments the customers based on their spending.
+5. Main query takes all those four queries and run the query to find out the solution.
+===================================================================================================================================================================================================================================
+*/
+
+
+use SalesDB;
+GO
+--Find total sales per customer.
+
+WITH CTE_Total_Sales AS  --(Standalone CTE)
+(
+	SELECT
+	customerID,
+	SUM(Sales) AS TotalSales
+	FROM Sales.Orders
+	GROUP BY CustomerID
+) 
+-- Find the last order date for each customer.
+, CTE_Last_Order AS
+(
+SELECT
+	customerID,
+	MAX(orderdate) AS LastOrder
+	FROM Sales.Orders
+	Group BY CustomerID
+)
+--Rank customers based on total sales per customer.
+, CTE_Customer_Rank As
+(
+SELECT
+customerID,
+TotalSales,
+RANK() OVER (ORDER By TotalSales DESC) CustomerRank
+FROM CTE_Total_Sales
+)
+, CTE_Customer_Segment AS
+(
+SELECT
+customerID,
+CASE WHEN TotalSales > 100 THEN 'High'
+	 WHEN TotalSales BETWEEN 60 AND 100 THEN 'Medium'
+	 ELSE 'Low'
+END AS CustomerSegment
+FROM CTE_Total_Sales
+)
+-- Main Query
+SELECT 
+c.CustomerID,
+c.firstName,
+c.LastName,
+cts.TotalSales,
+clo.LastOrder,
+cse.CustomerSegment,
+rnk.CustomerRank
+From Sales.Customers c
+LEFT JOIN CTE_Total_Sales cts
+ON c.CustomerID = cts.CustomerID
+LEFT JOIN CTE_Last_Order clo
+ON c.CustomerID = clo.CustomerID
+LEFT JOIN CTE_Customer_Rank rnk
+ON c.CustomerID = rnk.CustomerID
+LEFT JOIN CTE_Customer_Segment cse
+ON c.CustomerID = cse.CustomerID;
