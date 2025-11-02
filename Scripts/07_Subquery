@@ -1,0 +1,124 @@
+/*
+==========================================================================================================================================================================================
+A Subquery is a query within another query. In Subquery the order of execution is bottom to top. So first we will define the subquery and then the results of the subqueries are
+referred into the main query. The subquery acts as supporting table. The results of subquries are stored into the CASCH or memory and when the main query is executed, it goes 
+back to the results form the subquery and filters the data and send the final results back to the client.
+
+There are two types of Subquery:
+1.Dependant Subquery
+2.Independant Subquery
+
+These subqueries are used for filtering, comparing, grouping, and joining data etc. The results are compared with the aggregated calculations and then the data is filtered based on that.
+We use comparision operators for comparing scalar results, those comparision operators are : >= <= != > < 
+And we can compare the list values result sets using the Logical  Operators : IN, NOT IN, EXISTS, NOT EXISTS, ANY, ALL
+=============================================================================================================================================================================================
+In this code snippet:
+You will find - Independant and Dependant Subquery. 
+The Independant subquery runs independantly without any hassles from the main query. The main query, however is dependant for data from the independant subquery.
+The Dependant subquery are dependant for data from the Main Query. First the main query is executed and then the subquery.
+In this operation, the processing is slow as it takes time for the subquery to finish the processing.
+=============================================================================================================================================================================================
+*/
+
+
+use SalesDB;
+
+--Main Query
+SELECT
+c.* ,
+o.total_orders
+FROM Sales.Customers c
+LEFT JOIN 
+(
+	SELECT
+	customerID,
+	count(*) AS total_orders
+	From sales.Orders 
+	GROUP BY CustomerID) o
+ON c.CustomerID = o.CustomerID
+
+--Main Query
+SELECT
+ProductID,
+Price,
+(SELECT AVG(price) from Sales.Products) AvgPrice
+FROM Sales.Products  --Subquery
+WHERE Price > (SELECT AVG(price) from Sales.Products);
+
+--Without Subquery
+SELECT TOP 3
+ProductID,
+Price,
+AVG(Price) OVER () AS AvgPrice
+FROM sales.Products
+ORDER BY Price DESC;
+
+--Main Query
+SELECT 
+*
+FROM Sales.Orders	--Subquery
+WHERE CustomerID IN (SELECT customerID FROM  Sales.Customers WHERE Country = 'Germany');
+
+--Main Query
+SELECT 
+*
+FROM Sales.Orders		--Subquery
+WHERE CustomerID NOT IN (SELECT CustomerID FROM Sales.Customers where Country = 'Germany')
+
+
+--ANY Operator
+SELECT
+FirstName,
+Salary
+FROM Sales.Employees
+WHERE Gender = 'F'
+AND Salary > ANY (SELECT Salary FROM Sales.Employees WHERE Gender = 'M');
+
+-- Compares with
+SELECT 
+FirstName,
+LastName,
+Gender,
+Salary
+FROM Sales.Employees
+WHERE Gender = 'M';
+
+
+-- ALL Operartor
+SELECT
+FirstName,
+Salary
+FROM Sales.Employees
+WHERE Gender = 'F'
+AND Salary > ALL (SELECT Salary From Sales.Employees WHERE Gender = 'M')
+
+--Main Query -- Correlated Subquery
+SELECT 
+*,
+(SELECT COUNT(*) FROM Sales.Orders o WHERE c.CustomerID = o.CustomerID) AS total_sales
+FROM Sales.Customers c;
+
+-- Exists Operator
+SELECT
+*
+FROM Sales.Orders o
+WHERE EXISTS ( SELECT 1
+				FROM Sales.Customers c 
+				WHERE country = 'Germany' 
+				AND o.CustomerID = c.CustomerID)
+
+-- Subquery
+SELECT
+*
+FROM Sales.Customers
+WHERE Country = 'Germany';
+
+-- NOT EXISTS Operator
+
+SELECT 
+*
+FROM Sales.Orders o
+WHERE NOT EXISTS (SELECT 1 
+				  FROM Sales.Customers c
+				  WHERE Country ='Germany'
+				  AND o.CustomerID = c.CustomerID);
